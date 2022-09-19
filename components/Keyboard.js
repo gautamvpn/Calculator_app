@@ -1,15 +1,61 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Button,
+  Animated,
+} from 'react-native';
 import Numbers from './numbers';
 import Operation from './operations';
+let flag = true;
 
 export default function Keyboard() {
   const [resultText, setResultText] = useState('');
   const [calctext, setCalcText] = useState('');
+  const [dynamicResult, setDynamicResult] = useState('');
+
+  const opacity = useState(new Animated.Value(0))[0];
+
+  function fadeIn() {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }
+
+  function fadeOut() {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }
+
+  useEffect(() => {
+    if (
+      flag ||
+      calctext.charAt(calctext.length - 1) == '+' ||
+      calctext.charAt(calctext.length - 1) == '-' ||
+      calctext.charAt(calctext.length - 1) == '/' ||
+      calctext.charAt(calctext.length - 1) == '*'
+    ) {
+      console.log(calctext);
+    } else {
+      setDynamicResult(eval(calctext));
+    }
+    // console.log(typeof calctext);
+  }, [calctext]);
 
   const onButtonClick = text => {
     console.log(text);
     if (text == '=') {
+      flag = true;
+      setCalcText('');
+      setDynamicResult('');
+
       return calculation(text);
     }
     setCalcText(calctext + text);
@@ -22,15 +68,26 @@ export default function Keyboard() {
   const onOperation = text => {
     console.log(text);
     if (text == 'AC') {
-      setResultText(0);
+      setResultText('');
       setCalcText('');
+      setDynamicResult('');
+      flag = true;
       return;
     }
 
     if (text == 'DEL') {
+      // console.log(typeof calctext);
+      let val = calctext.charAt(calctext.length - 1);
+      if (val == '+' || val == '-' || val == '/' || val == '*') {
+        flag = true;
+      }
+      // console.log(calctext.charAt(calctext.length - 1));
       return setCalcText(calctext.toString().substring(0, calctext.length - 1));
     }
-    setCalcText(calctext + text);
+    if (flag) {
+      setCalcText(calctext + text);
+      flag = false;
+    }
   };
 
   // now return
@@ -38,7 +95,12 @@ export default function Keyboard() {
   return (
     <View style={styles.container}>
       <View style={styles.result}>
-        <Text style={styles.resultText}>{resultText}</Text>
+        <Text style={styles.resultText} onPress={fadeIn}>
+          {resultText}
+        </Text>
+        <Text style={styles.resultText1} onPress={fadeOut}>
+          {dynamicResult}
+        </Text>
       </View>
       <View style={styles.calculation}>
         <Text style={styles.calculationText}>{calctext}</Text>
@@ -63,21 +125,21 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   result: {
-    backgroundColor: 'gray',
+    backgroundColor: '#1d1c00',
     flex: 2,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   calculation: {
     flex: 1,
-    backgroundColor: 'gray',
     alignItems: 'flex-end',
     justifyContent: 'center',
+    backgroundColor: '#090509',
   },
   button: {
     flex: 7,
     flexDirection: 'row',
-    backgroundColor: '',
+    backgroundColor: '#090509',
   },
 
   item: {
@@ -85,11 +147,16 @@ const styles = StyleSheet.create({
     padding: 20,
     fontSize: 25,
     marginHorizontal: 18,
-    backgroundColor: 'gray',
     borderRadius: 15,
     fontWeight: 'bold',
   },
   resultText: {
+    marginTop: 55,
+    fontSize: 50,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  resultText1: {
     fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
@@ -97,14 +164,13 @@ const styles = StyleSheet.create({
   calculationText: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#ffffff',
   },
   number: {
     flex: 3,
   },
   Operations: {
     flex: 1,
-    backgroundColor: '#a2a2a2',
   },
   opt: {
     marginTop: 30,
