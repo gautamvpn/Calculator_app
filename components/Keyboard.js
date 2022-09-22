@@ -82,10 +82,37 @@ export default function Keyboard() {
         flag = true;
       }
       // console.log(calctext.charAt(calctext.length - 1));
-      return setCalcText(calctext.toString().substring(0, calctext.length - 1));
+
+      if(calctext == '')
+      {
+        return setResultText(
+          resultText.toString().substring(0,resultText.length-1));
+      }
+      return setCalcText(
+        calctext.toString().substring(0, calctext.length - 1)
+
+        // console.log(calctext.length)
+        // console.log(typeof calctext)
+      )
     }
+
+    // const new_value = (Array.from(String(resultText), Number)).toString();
+    // console.log(typeof resultText)
+    // console.log(typeof new_value)
+    // console.log(resultText.length)
+    // console.log(new_value.length)
+    // return setResultText(
+    //   new_value.substring(0, new_value.length - 1),
+
+    // );
+
     if (flag) {
-      setCalcText(calctext + text);
+      if (resultText == '') {
+        setCalcText(calctext + text);
+      } else {
+        setCalcText(resultText + text);
+        setResultText('');
+      }
       flag = false;
     }
   };

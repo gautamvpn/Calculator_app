@@ -4,8 +4,16 @@
  *
  * @format
  */
-
+const {FileStore} = require('metro-cache');
+const os = require('os');
+const path = require('path');
 module.exports = {
+  cacheStores: [
+    new FileStore({
+      root: path.join(os.homedir(), 'metro-cache'),
+    }),
+  ],
+
   transformer: {
     getTransformOptions: async () => ({
       transform: {
