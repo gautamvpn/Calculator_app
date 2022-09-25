@@ -3,44 +3,25 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Button,
-  Animated,
 } from 'react-native';
 import Numbers from './numbers';
 import Operation from './operations';
-let flag = true;
 
+let flag = true;
 export default function Keyboard() {
   const [resultText, setResultText] = useState('');
   const [calctext, setCalcText] = useState('');
   const [dynamicResult, setDynamicResult] = useState('');
 
-  const opacity = useState(new Animated.Value(0))[0];
 
-  function fadeIn() {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }
-
-  function fadeOut() {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }
-
+  // for dynamic calculations
   useEffect(() => {
+    let charLast = calctext.charAt(calctext.length - 1);
     if (
-      flag ||
-      calctext.charAt(calctext.length - 1) == '+' ||
-      calctext.charAt(calctext.length - 1) == '-' ||
-      calctext.charAt(calctext.length - 1) == '/' ||
-      calctext.charAt(calctext.length - 1) == '*'
+      charLast == '+' ||
+      charLast == '-' ||
+      charLast == '/' ||
+      charLast == '*'
     ) {
       console.log(calctext);
     } else {
@@ -49,24 +30,44 @@ export default function Keyboard() {
     // console.log(typeof calctext);
   }, [calctext]);
 
+
+  // keyboard numbers
   const onButtonClick = text => {
     console.log(text);
+    let lastChar = calctext.charAt(calctext.length - 1);
     if (text == '=') {
+      if (
+        lastChar == '+' ||
+        lastChar == '-' ||
+        lastChar == '/' ||
+        lastChar == '*'
+      ) {
+        return '';
+      }
       flag = true;
       setCalcText('');
       setDynamicResult('');
 
       return calculation(text);
     }
+    setResultText('');
     setCalcText(calctext + text);
   };
 
+  //final calculations result.
   const calculation = () => {
     setResultText(eval(calctext));
   };
 
+  // specific operations button
   const onOperation = text => {
+    let val = calctext.charAt(calctext.length - 1);
+    let nums = '123456789';
+    let pattern = /[1-9]/g;
+    let matchStrPattern = nums.match(pattern);
+
     console.log(text);
+    //rid off all text
     if (text == 'AC') {
       setResultText('');
       setCalcText('');
@@ -75,25 +76,23 @@ export default function Keyboard() {
       return;
     }
 
+    // Delete button
     if (text == 'DEL') {
-      // console.log(typeof calctext);
-      let val = calctext.charAt(calctext.length - 1);
       if (val == '+' || val == '-' || val == '/' || val == '*') {
         flag = true;
       }
-      // console.log(calctext.charAt(calctext.length - 1));
-
-      if(calctext == '')
-      {
+      if (calctext == '') {
         return setResultText(
-          resultText.toString().substring(0,resultText.length-1));
+          resultText.toString().substring(0, resultText.length - 1),
+        );
+      } else {
+        return setCalcText(
+          calctext.toString().substring(0, calctext.length - 1),
+        );
       }
-      return setCalcText(
-        calctext.toString().substring(0, calctext.length - 1)
 
-        // console.log(calctext.length)
-        // console.log(typeof calctext)
-      )
+      // console.log(calctext.length)
+      // console.log(typeof calctext)
     }
 
     // const new_value = (Array.from(String(resultText), Number)).toString();
@@ -115,17 +114,21 @@ export default function Keyboard() {
       }
       flag = false;
     }
+
+    if (matchStrPattern.includes(calctext.charAt(calctext.length - 1))) {
+      setCalcText(calctext + text);
+    }
   };
 
-  // now return
+
 
   return (
     <View style={styles.container}>
       <View style={styles.result}>
-        <Text style={styles.resultText} onPress={fadeIn}>
+        <Text style={styles.resultText} >
           {resultText}
         </Text>
-        <Text style={styles.resultText1} onPress={fadeOut}>
+        <Text style={styles.resultText1} >
           {dynamicResult}
         </Text>
       </View>
@@ -152,7 +155,7 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   result: {
-    backgroundColor: '#1d1c00',
+    backgroundColor: '#8a8a5c',
     flex: 2,
     alignItems: 'flex-end',
     justifyContent: 'center',
@@ -181,15 +184,16 @@ const styles = StyleSheet.create({
     marginTop: 55,
     fontSize: 50,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#1a0d00',
   },
+  
   resultText1: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#331a00',
   },
   calculationText: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#ffffff',
   },
@@ -202,8 +206,4 @@ const styles = StyleSheet.create({
   opt: {
     marginTop: 30,
   },
-  // operations:{
-  //     backgroundColor:'#434343',
-  //     flex:1,
-  // }
 });

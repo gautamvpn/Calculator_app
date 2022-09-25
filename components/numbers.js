@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity,TouchableHighlight,Button} from 'react-native';
 
 export default function Numbers({onButtonClick}) {
+
+  const onPress = () => console.log(count + 1);
+
   let rows = [];
   let nums = [
     [1, 2, 3],
@@ -14,13 +17,17 @@ export default function Numbers({onButtonClick}) {
     var row = [];
     for (let j = 0; j < 3; j++) {
       row.push(
+        
         <TouchableOpacity key={nums[i][j]} style={styles.btn}>
+        <TouchableHighlight key={nums[i][j]}  onPress={onPress}>
           <Text
             onPress={() => onButtonClick(nums[i][j])}
             style={styles.btnText}>
             {nums[i][j]}
           </Text>
+          </TouchableHighlight>
         </TouchableOpacity>
+        
       );
     }
     rows.push(
