@@ -1,9 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Numbers from './numbers';
 import Operation from './operations';
 
@@ -12,7 +8,7 @@ export default function Keyboard() {
   const [resultText, setResultText] = useState('');
   const [calctext, setCalcText] = useState('');
   const [dynamicResult, setDynamicResult] = useState('');
-
+  const [ope, setOpe] = useState(true);
 
   // for dynamic calculations
   useEffect(() => {
@@ -26,14 +22,15 @@ export default function Keyboard() {
       console.log(calctext);
     } else {
       setDynamicResult(eval(calctext));
+      // console.log(eval(calctext))
+      // console.log(dynamicResult);
     }
     // console.log(typeof calctext);
   }, [calctext]);
 
-
   // keyboard numbers
   const onButtonClick = text => {
-    console.log(text);
+    // console.log(text);  //1
     let lastChar = calctext.charAt(calctext.length - 1);
     if (text == '=') {
       if (
@@ -66,12 +63,14 @@ export default function Keyboard() {
     let pattern = /[1-9]/g;
     let matchStrPattern = nums.match(pattern);
 
-    console.log(text);
+    // console.log(text); //2
     //rid off all text
     if (text == 'AC') {
       setResultText('');
       setCalcText('');
       setDynamicResult('');
+
+      setOpe('');
       flag = true;
       return;
     }
@@ -105,6 +104,9 @@ export default function Keyboard() {
 
     // );
 
+    console.log(dynamicResult);
+    // setOpe(dynamicResult + text);
+
     if (flag) {
       if (resultText == '') {
         setCalcText(calctext + text);
@@ -117,20 +119,16 @@ export default function Keyboard() {
 
     if (matchStrPattern.includes(calctext.charAt(calctext.length - 1))) {
       setCalcText(calctext + text);
+      // setCalcText(dynamicResult + text)
+      // setDynamicResult('');
     }
   };
-
-
 
   return (
     <View style={styles.container}>
       <View style={styles.result}>
-        <Text style={styles.resultText} >
-          {resultText}
-        </Text>
-        <Text style={styles.resultText1} >
-          {dynamicResult}
-        </Text>
+        <Text style={styles.resultText}>{resultText}</Text>
+        <Text style={styles.resultText1}>{dynamicResult}</Text>
       </View>
       <View style={styles.calculation}>
         <Text style={styles.calculationText}>{calctext}</Text>
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1a0d00',
   },
-  
+
   resultText1: {
     fontSize: 25,
     fontWeight: 'bold',
